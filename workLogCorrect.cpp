@@ -5,122 +5,166 @@
 #include "allInfo.h"
 
 using namespace std;
-//ÊµÏÖ¸Ã¹¦ÄÜµÄË¼Â·ÊÇ£º´´½¨¸±±¾
-struct del                                          //É¾³ıĞÅÏ¢µÄÊ±ºò£¬Í¨¹ıÖ¸¶¨Ãû×ÖÀ´Çø·Ö
-{
-	char name[N];
-};
 
-struct correct                                       //±£´æÒªĞŞÕıµÄÕıÈ·ĞÅÏ¢
+namespace workLogCorrect
 {
-	char name[N];
-	int month;
-	int day;
-	int rest;
-};
-
-void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[])
-{
-	int now_year, now_month, now_day;                                                  
-	SYSTEMTIME t;                                                                      //»ñµÃµ±Ç°ÈÕÆÚĞÅÏ¢                                        
-	GetLocalTime(&t);
-	now_year = t.wYear;
-	now_month = t.wMonth;
-	now_day = t.wDay;
-
-	ofstream mu_out(muPath, ios::out | ios::app);                                       //´ò¿ªÉúÈÕĞÅÏ¢ÎÄ¼şÁ÷ÒÔ¼°Æä¸±±¾
-	ofstream copy_mu(copy_muPath);
-	if((!mu_out) || (!copy_mu))                                                         //´ò¿ª³É¹¦·µ»ØÖµÎª1
+	//å®ç°è¯¥åŠŸèƒ½çš„æ€è·¯æ˜¯ï¼šåˆ›å»ºå‰¯æœ¬
+	struct del                                          //åˆ é™¤ä¿¡æ¯çš„æ—¶å€™ï¼Œé€šè¿‡æŒ‡å®šåå­—æ¥åŒºåˆ†
 	{
-		cout << "??? Fail to open!!!" << endl;
-		return;
-	}
-	mu_out.close();
+		char name[N];
+	};
 
-	del delNo[N1]; correct corNo[N1];
-	int delNum = 0, corNum = 0;
+	struct correct                                       //ä¿å­˜è¦ä¿®æ­£çš„æ­£ç¡®ä¿¡æ¯
+	{
+		char name[N];
+		int month;
+		int day;
+		int rest;
+	};
+	
+	struct CDNum
+	{
+		int delNum = 0;
+		int corNum = 0;
+	};
+	
+	// å…¨å±€å˜é‡
+	int now_year, now_month, now_day;
 	char name[N], old_name[N];
-	int month, day, rest;
-	cout << "Will you want to add(1)/correct(2)/delete(3) info or no(0):" << endl;        //½çÃæÓÅ»¯,ÈÃÓÃ»§½øĞĞÑ¡Ôñ
-	int num = 0;
-	cin >> num;
-	while(num) //ÏÈ½«ĞèÒªµÄĞŞÕı£¬Ôö¼Ó£¬É¾³ıµÄĞÅÏ¢±£´æµ½³ÌĞòÀï
+	del delNo[N1];
+	correct corNo[N1];
+
+	void getCurrTime()
 	{
-		if(num == 1)
-		{
-			cout << "Name(no space)    Month   Day (once a man/womanÒ»´ÎÒ»ÈË):" << endl;
-			cin >> name >> month >> day;
-			if(now_month < month || (now_month == month && now_day <= day))
-			{
-				rest = abs(daysGap(now_year, now_month, now_day) - daysGap(now_year, month, day));
-			}
-			else
-			{
-				rest = abs(daysGap(now_year, now_month, now_day) - daysGap(now_year + 1, month, day));
-			}
-			mu_out.open(muPath, ios::out | ios::app);
-			mu_out << name << "    " << month << "    " << day << "    " << rest <<'\n';
-			mu_out.close();
-		}
-		else if(num == 2)
-		{
-			cout << "input the name,correct name(no space) , correct month and correct day:" << endl;
-			cin >> old_name;
-			cin >> corNo[corNum].name;
-			cin >> corNo[corNum].month >> corNo[corNum].day;
-			if(now_month < corNo[corNum].month || (now_month == corNo[corNum].month && now_day <= corNo[corNum].day))
-			{
-				cout << (corNo[corNum].rest = abs(daysGap(now_year, now_month, now_day) - daysGap(now_year, corNo[corNum].month, corNo[corNum].day))) << endl;
-			}
-			else
-			{
-				cout << (corNo[corNum].rest = abs(daysGap(now_year, now_month, now_day) - daysGap(now_year + 1, corNo[corNum].month, corNo[corNum].day))) << endl;
-			}
-			corNum++;
-		}
-		else
-		{
-			cout << "input the name(no space)" << endl;
-			cin >> delNo[delNum++].name;
-		}
-		cout << "continue?...(input num)" << endl;
-		cin >> num;
+		SYSTEMTIME t;                                  
+		GetLocalTime(&t);
+		now_year = t.wYear;
+		now_month = t.wMonth;
+		now_day = t.wDay;
 	}
 
-	ifstream mu_in(muPath);
-	while(!mu_in.eof())                              //½«³ÌĞòÖĞ±£´æµÄĞÅÏ¢½áºÏÔ­txtÊäÈëµ½¸±±¾txtÖĞ
+	void recAddenLog(ostream &out)
 	{
-		int i = 0;
-		mu_in>>name;
-		mu_in >> month >> day >> rest ;
-		if( month > 12 || month < 1 || day > 31 || day < 1 || !strcmp(name, "")) //""µÃµ½»Ø³µ
-		{
-			break;
+		int month, day, rest;
+		cout << "Name(no space)    Month   Day (once a man/womanä¸€æ¬¡ä¸€äºº):" << endl;
+		cin >> name >> month >> day;
+		
+		rest = abs(daysGap(now_year, now_month, now_day);
+		
+		if (now_month < month || (now_month == month && now_day <= day)) {
+			rest -= daysGap(now_year, month, day));
 		}
-		for(i = 0; i < delNum; i++)
-		{
-			if(!strcmp(name, delNo[i].name))
-				break;
+		else {
+			rest -= daysGap(now_year + 1, month, day));
 		}
-		if(i < delNum)
-			continue;
+		
+		out << name << "    " << month << "    " << day << "    " << rest <<'\n';
+	}
+	void recAdjustLog()
+	{
+		int &month = corNo[corNum].month;
+		int &day = corNo[corNum].day;
+		int &rest = corNo[corNum].rest;
+		
+		cout << "input the name,correct name(no space) , correct month and correct day:" << endl;
+		cin >> old_name;
+		cin >> corNo[corNum].name;
+		cin >> month >> day;
+		
+		rest = abs(daysGap(now_year, now_month, now_day);
+		
+		if (now_month < month || (now_month == month && now_day <= day)) {
+			rest -= daysGap(now_year, month, day));
+		}
+		else {
+			rest -= daysGap(now_year + 1, month, day));
+		}
+		
+		cout << rest << endl;
+	}
 
-		for(i = 0; i < corNum; i++)
+	void function1(CDNum &cdNum, ofstream &mu_out)
+	{
+		int &delNum = cdNum.delNum;
+		int &corNum = cdNum.corNum;
+		cout << "Will you want to add(1)/correct(2)/delete(3) info or no(0):" << endl;        //ç•Œé¢ä¼˜åŒ–,è®©ç”¨æˆ·è¿›è¡Œé€‰æ‹©
+		int num = 0;
+		cin >> num;
+		while (num) //å…ˆå°†éœ€è¦çš„ä¿®æ­£ï¼Œå¢åŠ ï¼Œåˆ é™¤çš„ä¿¡æ¯ä¿å­˜åˆ°ç¨‹åºé‡Œ
 		{
-			if(!strcmp(name, old_name))
-			{
-				copy_mu << corNo[i].name << "    " << corNo[i].month << "    " << corNo[i].day << "    " << corNo[i].rest << '\n';
+			if (num == 1) {
+				recAddenLog(mu_out);
+			}
+			else if (num == 2) {
+				recAdjustLog();
+				corNum++;
+			}
+			else {
+				cout << "input the name(no space)" << endl;
+				cin >> delNo[delNum++].name;
+			}
+			cout << "continue?...(input num)" << endl;
+			cin >> num;
+		}
+	}
+	void function2(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in)
+	{
+		int &delNum = cdNum.delNum;
+		int &corNum = cdNum.corNum;
+		while (!mu_in.eof())                              //å°†ç¨‹åºä¸­ä¿å­˜çš„ä¿¡æ¯ç»“åˆåŸtxtè¾“å…¥åˆ°å‰¯æœ¬txtä¸­
+		{
+			int i = 0;
+			int month, day, rest;
+			mu_in>>name;
+			mu_in >> month >> day >> rest ;
+			if( month > 12 || month < 1 || day > 31 || day < 1 || !strcmp(name, "")) /*""å¾—åˆ°å›è½¦*/ {
 				break;
 			}
+			for (i = 0; i < delNum; i++) {
+				if (!strcmp(name, delNo[i].name))
+					break;
+			}
+			if (i < delNum) {
+				continue;
+			}
+
+			for (i = 0; i < corNum; i++) {
+				if (!strcmp(name, old_name)) {
+					copy_mu << corNo[i].name << "    " << corNo[i].month << "    " << corNo[i].day << "    " << corNo[i].rest << '\n';
+					break;
+				}
+			}
+			if (i < corNum)
+				continue;
+			copy_mu << name << "    " << month << "    " << day << "    " << rest <<'\n';
 		}
-		if(i < corNum)
-			continue;
-		copy_mu << name << "    " << month << "    " << day << "    " << rest <<'\n';
 	}
 	
-	mu_in.close();
-	copy_mu.close();
-	remove(muPath);
-	rename(copy_muPath, muPath);
-	return;
+	void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[])
+	{
+		// è·å¾—å½“å‰æ—¥æœŸä¿¡æ¯
+		getCurrTime();
+		
+		
+		ofstream mu_out(muPath, ios::out | ios::app);                                       //æ‰“å¼€ç”Ÿæ—¥ä¿¡æ¯æ–‡ä»¶æµä»¥åŠå…¶å‰¯æœ¬
+		ofstream copy_mu(copy_muPath);
+		ifstream mu_in(muPath);
+		if ((!mu_out) || (!copy_mu))                                                         //æ‰“å¼€æˆåŠŸè¿”å›å€¼ä¸º1
+		{
+			cout << "??? Fail to open!!!" << endl;
+			return;
+		}
+		
+		CDNum cdNum;
+		
+		function1(cdNum, mu_out);
+		function2(cdNum, copy_mu, mu_in);
+		
+		mu_out.close();
+		mu_in.close();
+		copy_mu.close();
+		remove(muPath);
+		rename(copy_muPath, muPath);
+		return;
+	}
 }
