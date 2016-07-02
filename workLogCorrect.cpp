@@ -38,8 +38,8 @@ namespace workLogCorrect
 	void getCurrTime();
 	void recAddenLog(ostream &out);
 	void recAdjustLog();
-	void function1(CDNum &cdNum, ofstream &mu_out);
-	void function2(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in);
+	void funcAddInfo(CDNum &cdNum, ofstream &mu_out);
+	void funcCorrectInfo(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in);
 	
 	void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[])
 	{
@@ -56,8 +56,8 @@ namespace workLogCorrect
 		
 		CDNum cdNum;
 		
-		function1(cdNum, mu_out);
-		function2(cdNum, copy_mu, mu_in);
+		funcAddInfo(cdNum, mu_out);
+		funcCorrectInfo(cdNum, copy_mu, mu_in);
 		
 		mu_out.close();
 		mu_in.close();
@@ -115,7 +115,7 @@ namespace workLogCorrect
 		cout << rest << endl;
 	}
 
-	void function1(CDNum &cdNum, ofstream &mu_out)
+	void funcAddInfo(CDNum &cdNum, ofstream &mu_out)
 	{
 		int &delNum = cdNum.delNum;
 		int &corNum = cdNum.corNum;
@@ -139,7 +139,7 @@ namespace workLogCorrect
 			cin >> num;
 		}
 	}
-	void function2(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in)
+	void funcCorrectInfo(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in)
 	{
 		int &delNum = cdNum.delNum;
 		int &corNum = cdNum.corNum;
