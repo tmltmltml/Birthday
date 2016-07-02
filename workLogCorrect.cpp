@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <iostream>
-//#include <afx.h>
 #include <fstream>
 #include "allInfo.h"
+#include "workLogCorrect.h"
 
 using namespace std;
 
@@ -33,7 +33,40 @@ namespace workLogCorrect
 	char name[N], old_name[N];
 	del delNo[N1];
 	correct corNo[N1];
-
+	
+	// 函数声明
+	void getCurrTime();
+	void recAddenLog(ostream &out);
+	void recAdjustLog();
+	void function1(CDNum &cdNum, ofstream &mu_out);
+	void function2(CDNum &cdNum, ofstream &copy_mu, ifstream &mu_in);
+	
+	void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[])
+	{
+		getCurrTime(); // 获得当前日期信息
+		
+		ofstream mu_out(muPath, ios::out | ios::app); //打开生日信息文件流以及其副本
+		ofstream copy_mu(copy_muPath);
+		ifstream mu_in(muPath);
+		
+		if ((!mu_out) || (!copy_mu)) /*打开成功返回值为1*/ {
+			cout << "??? Fail to open!!!" << endl;
+			return;
+		}
+		
+		CDNum cdNum;
+		
+		function1(cdNum, mu_out);
+		function2(cdNum, copy_mu, mu_in);
+		
+		mu_out.close();
+		mu_in.close();
+		copy_mu.close();
+		remove(muPath);
+		rename(copy_muPath, muPath);
+		return;
+	}
+	
 	void getCurrTime()
 	{
 		SYSTEMTIME t;                                  
@@ -138,33 +171,5 @@ namespace workLogCorrect
 				continue;
 			copy_mu << name << "    " << month << "    " << day << "    " << rest <<'\n';
 		}
-	}
-	
-	void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[])
-	{
-		// 获得当前日期信息
-		getCurrTime();
-		
-		
-		ofstream mu_out(muPath, ios::out | ios::app);                                       //打开生日信息文件流以及其副本
-		ofstream copy_mu(copy_muPath);
-		ifstream mu_in(muPath);
-		if ((!mu_out) || (!copy_mu))                                                         //打开成功返回值为1
-		{
-			cout << "??? Fail to open!!!" << endl;
-			return;
-		}
-		
-		CDNum cdNum;
-		
-		function1(cdNum, mu_out);
-		function2(cdNum, copy_mu, mu_in);
-		
-		mu_out.close();
-		mu_in.close();
-		copy_mu.close();
-		remove(muPath);
-		rename(copy_muPath, muPath);
-		return;
 	}
 }
