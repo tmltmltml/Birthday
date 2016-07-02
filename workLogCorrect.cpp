@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "allInfo.h"
+#include "workLogCorrect.h"
 
 using namespace std;
 
@@ -34,9 +35,6 @@ namespace workLogCorrect
 	correct corNo[N1];
 	
 	// 函数声明
-	// + 外部使用
-	void workLogCorrect(TCHAR muPath[], TCHAR copy_muPath[]);
-	// + 内部使用
 	void getCurrTime();
 	void recAddenLog(ostream &out);
 	void recAdjustLog();
