@@ -64,7 +64,6 @@ namespace workLogCorrect
 		copy_mu.close();
 		remove(muPath);
 		rename(copy_muPath, muPath);
-		return;
 	}
 	
 	void getCurrTime()
